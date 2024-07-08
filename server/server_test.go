@@ -54,6 +54,30 @@ func BenchmarkSETk(b *testing.B) {
 
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
+
+	var wg2 sync.WaitGroup
+
+	for i := 0; i < b.N; i++ {
+		wg2.Add(1)
+		go func() {
+			reqBody := server.Request_Post{
+				Method: "DEL",
+				Key:    fmt.Sprintf("KEY %d", i),
+			}
+			jsonValue, _ := json.Marshal(reqBody)
+			defer wg2.Done()
+			req, _ := http.NewRequest("DELETE", "/delete", bytes.NewBuffer(jsonValue))
+			req.Header.Set("Content-Type", "application/json")
+
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
+
+			if w.Code != http.StatusOK {
+				b.Fatalf("Expected status code %d but got %d", http.StatusOK, w.Code)
+			}
+		}()
+	}
+	wg2.Wait()
 }
 
 func TestSETk(t *testing.T) {
