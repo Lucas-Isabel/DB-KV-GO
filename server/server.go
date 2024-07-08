@@ -92,11 +92,12 @@ func (s *Server) ALLkv(c *gin.Context) {
 	if req.Method == "ALL" {
 		// Configurando o valor no armazenamento
 		values := s.Store.ALLkv()
+
 		if len(values) > 0 {
 			log.Println(values)
 
 			// Abrir um arquivo para escrita
-			file, err := os.Create("output.txt")
+			file, err := os.Create("complete.txt")
 			if err != nil {
 				fmt.Println("Erro ao criar o arquivo:", err)
 				return
@@ -114,6 +115,21 @@ func (s *Server) ALLkv(c *gin.Context) {
 				"message": "Values get successfully!",
 				"values":  values,
 			})
+		} else {
+			// Abrir um arquivo para escrita
+			file, err := os.Create("vaz.txt")
+			if err != nil {
+				fmt.Println("Erro ao criar o arquivo:", err)
+				return
+			}
+			defer file.Close()
+
+			// Escrever a struct Person no arquivo
+			_, err = fmt.Fprintf(file, "%+v\n", values)
+			if err != nil {
+				fmt.Println("Erro ao escrever no arquivo:", err)
+				return
+			}
 		}
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{

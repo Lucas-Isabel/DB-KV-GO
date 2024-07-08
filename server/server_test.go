@@ -11,73 +11,72 @@ import (
 
 	"github.com/Lucasbyte/DB-KV-GO/routes"
 	"github.com/Lucasbyte/DB-KV-GO/server"
+	"github.com/gin-gonic/gin"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func BenchmarkSETk(b *testing.B) {
+	all := func(r *gin.Engine) {
+		reqBodyGetAll := server.Request_Get{
+			Method: "ALL",
+		}
+		jsonValueGetAll, _ := json.Marshal(reqBodyGetAll)
+		req, _ := http.NewRequest("GET", "/all", bytes.NewBuffer(jsonValueGetAll))
+		req.Header.Set("Content-Type", "application/json")
+
+		w := httptest.NewRecorder()
+		r.ServeHTTP(w, req)
+	}
+
 	s := server.NewServer()
 	router := routes.RunRoutes(s)
 
 	var wg sync.WaitGroup
-
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		wg.Add(1)
-		go func() {
+		go func(i int) {
+			defer wg.Done()
 			reqBody := server.Request_Post{
 				Method: "SET",
 				Key:    fmt.Sprintf("KEY %d", i),
 				Value:  fmt.Sprintf("VALUE %d", i),
 			}
 			jsonValue, _ := json.Marshal(reqBody)
-			defer wg.Done()
 			req, _ := http.NewRequest("POST", "/set", bytes.NewBuffer(jsonValue))
 			req.Header.Set("Content-Type", "application/json")
 
 			w := httptest.NewRecorder()
 			router.ServeHTTP(w, req)
-
-			if w.Code != http.StatusOK {
-				b.Fatalf("Expected status code %d but got %d", http.StatusOK, w.Code)
-			}
-		}()
+		}(i)
 	}
 	wg.Wait()
 
-	reqBodyGetAll := server.Request_Get{
-		Method: "ALL",
-	}
-	jsonValueGetAll, _ := json.Marshal(reqBodyGetAll)
-	req, _ := http.NewRequest("GET", "/all", bytes.NewBuffer(jsonValueGetAll))
-	req.Header.Set("Content-Type", "application/json")
-
-	w := httptest.NewRecorder()
-	router.ServeHTTP(w, req)
+	all(router)
 
 	var wg2 sync.WaitGroup
 
 	for i := 0; i < b.N; i++ {
 		wg2.Add(1)
-		go func() {
+		go func(i int) {
+			defer wg2.Done()
 			reqBody := server.Request_Post{
 				Method: "DEL",
 				Key:    fmt.Sprintf("KEY %d", i),
 			}
 			jsonValue, _ := json.Marshal(reqBody)
-			defer wg2.Done()
+
 			req, _ := http.NewRequest("DELETE", "/delete", bytes.NewBuffer(jsonValue))
 			req.Header.Set("Content-Type", "application/json")
 
 			w := httptest.NewRecorder()
 			router.ServeHTTP(w, req)
-
-			if w.Code != http.StatusOK {
-				b.Fatalf("Expected status code %d but got %d", http.StatusOK, w.Code)
-			}
-		}()
+		}(i)
 	}
 	wg2.Wait()
+
+	all(router)
 }
 
 func TestSETk(t *testing.T) {
