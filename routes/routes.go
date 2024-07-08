@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"db-kv-go/server"
+	"github.com/Lucasbyte/DB-KV-GO/server"
 
 	"github.com/gin-gonic/gin"
 )

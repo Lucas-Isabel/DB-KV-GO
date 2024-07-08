@@ -2,14 +2,15 @@ package server_test
 
 import (
 	"bytes"
-	"db-kv-go/routes"
-	"db-kv-go/server"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"sync"
 	"testing"
+
+	"github.com/Lucasbyte/DB-KV-GO/routes"
+	"github.com/Lucasbyte/DB-KV-GO/server"
 
 	"github.com/stretchr/testify/assert"
 )

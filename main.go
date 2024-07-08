@@ -1,9 +1,10 @@
 package main
 
 import (
-	"db-kv-go/routes"
-	"db-kv-go/server"
 	"fmt"
+
+	"github.com/Lucasbyte/DB-KV-GO/routes"
+	"github.com/Lucasbyte/DB-KV-GO/server"
 )
 
 func main() {

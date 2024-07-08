@@ -1,12 +1,12 @@
 package server
 
 import (
-	"db-kv-go/storage"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 
+	"github.com/Lucasbyte/DB-KV-GO/storage"
 	"github.com/gin-gonic/gin"
 )
 
