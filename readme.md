@@ -169,5 +169,3 @@ Os testes estão localizados em `server/server_test.go` e cobrem as principais f
 ## Contribuições
 
 Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar pull requests.
-
-Se precisar de mais alguma coisa, por favor, me avise!
